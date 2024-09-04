@@ -1,7 +1,9 @@
-oi i am here
-waf
-afwff
-hthez
-hhdhsh
-hehet
-hrhh
+-Lista do Mercado-
+
+Leite
+Pão
+Ovos
+Frutas (como bananas ou maçãs)
+Arroz
+Carne (como frango ou carne moída)
+Vegetais (como alface ou tomate)
