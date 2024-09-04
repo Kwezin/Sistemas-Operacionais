@@ -4,7 +4,7 @@
 
 int main() {
     // 1. Abra um arquivo de texto chamado 'lab2_ex1.txt' em modo leitura
-    int file = open("lab2_ex1.txt", O_RDONLY);
+    int file = open("/uploads/lab2_ex1.txt", O_RDONLY);
 
     // 2. Verifique se o arquivo foi aberto com sucesso
     if (file == -1) {
