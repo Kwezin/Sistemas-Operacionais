@@ -17,7 +17,7 @@ int main() {
         printf("Sou o processo filho. Meu PID é %d\n", getpid());
         fflush(stdout);  // Garante que a mensagem seja impressa antes de exec()
 
-        
+        printf("\n");
         execlp("ls", "ls", "-l", NULL);  // "-l" é o argumento para o comando ls
         
         perror("Falha ao executar o comando ls");
@@ -29,7 +29,7 @@ int main() {
 
         wait(NULL);
 
-        printf("Processo filho terminou. Processo pai continuando.\n");
+        printf("\nProcesso filho terminou. Processo pai continuando.\n");
     }
 
     return 0;
