@@ -1,0 +1,38 @@
+// Lab 03 Exercicio 01
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>  // Para fork() e sleep()
+#include <sys/types.h> // Para pid_t
+#include <sys/wait.h>  // Para wait()
+
+int main() {
+    
+    pid_t pid = fork();
+    
+    if(pid <0){
+        perror("Erro ao criar o PID");
+    }
+    if(pid == 0){
+        printf("\n");
+        printf("Sou o processo filho e meu PID é: %d", getpid());
+
+        int i;
+        for(i=1; i<6; i++){
+            printf("\n%dº vez aqui", i);
+            sleep(1);
+            
+        }
+        
+    }else{
+        printf("Sou o processo pai e meu PID é: %d", getpid());
+        printf("\n");
+        printf("Meu processo filho é: %d", pid);
+        printf("\n");
+
+        
+    }
+
+
+    return 0;
+}
