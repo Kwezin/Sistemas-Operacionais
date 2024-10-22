@@ -22,6 +22,7 @@ celula* cria_celula(int valor) {
 // Função para imprimir todos os valores da lista
 void imprime_lista(celula *cabeca) {
     celula *atual = cabeca;
+    printf("Valores da lista: ");
     while (atual != NULL) {
         printf("%d -> ", atual->conteudo);
         atual = atual->prox;
@@ -49,7 +50,6 @@ int main() {
     cabeca->prox->prox = cria_celula(30);
 
     // Impressão dos valores da lista
-    printf("Valores da lista: ");
     imprime_lista(cabeca);
 
     // Cálculo da quantidade de memória gasta por cada instância da célula
@@ -58,6 +58,12 @@ int main() {
     // Remover a lista e liberar a memória
     remove_lista(&cabeca);
     printf("Lista removida e memória liberada.\n");
+
+    // Cálculo do máximo de elementos possíveis
+    long long memoria_disponivel = 1073741824; // 1 GB em bytes
+    long long tamanho_celula = sizeof(celula);
+    long long max_elementos = memoria_disponivel / tamanho_celula;
+    printf("Máximo de elementos possíveis na lista com 1 GB de memória: %lld\n", max_elementos);
 
     return 0;
 }
