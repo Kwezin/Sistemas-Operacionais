@@ -1,0 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct reg {
+    int conteudo; 
+    struct reg *prox; 
+}; 
+typedef struct reg celula;
+
+// Função para criar uma nova célula
+celula* cria_celula(int valor) {
+    celula *nova = (celula*)malloc(sizeof(celula));
+    if (nova == NULL) {
+        printf("Erro ao alocar memória.\n");
+        exit(1);
+    }
+    nova->conteudo = valor;
+    nova->prox = NULL;
+    return nova;
+}
+
+// Função para imprimir todos os valores da lista
+void imprime_lista(celula *cabeca) {
+    celula *atual = cabeca;
+    while (atual != NULL) {
+        printf("%d -> ", atual->conteudo);
+        atual = atual->prox;
+    }
+    printf("NULL\n");
+}
+
+// Função para remover todos os elementos da lista e liberar memória
+void remove_lista(celula **cabeca) {
+    celula *atual = *cabeca;
+    celula *temp;
+    while (atual != NULL) {
+        temp = atual;
+        atual = atual->prox;
+        free(temp);
+    }
+    *cabeca = NULL;
+}
+
+// Função principal
+int main() {
+    // Criação de três instâncias da célula
+    celula *cabeca = cria_celula(10);
+    cabeca->prox = cria_celula(20);
+    cabeca->prox->prox = cria_celula(30);
+
+    // Impressão dos valores da lista
+    printf("Valores da lista: ");
+    imprime_lista(cabeca);
+
+    // Cálculo da quantidade de memória gasta por cada instância da célula
+    printf("Memória utilizada por cada célula: %lu bytes\n", sizeof(celula));
+
+    // Remover a lista e liberar a memória
+    remove_lista(&cabeca);
+    printf("Lista removida e memória liberada.\n");
+
+    return 0;
+}
