@@ -1,0 +1,108 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define NUM_FRAMES 16       // Número total de frames na memória física
+#define NUM_PAGES 32        // Número total de páginas na memória virtual
+#define TAMANHO_PAGINA 256  // Tamanho de cada página/frame
+
+// Estrutura para representar um frame na memória física
+typedef struct {
+    int id;       // ID do frame
+    int ocupado;  // Flag indicando se o frame está ocupado (1) ou livre (0)
+} Frame;
+
+// Estrutura para representar uma página na memória virtual
+typedef struct {
+    int id;       // ID da página
+    int alocado;  // Flag indicando se a página está alocada (1) ou não (0)
+} Pagina;
+
+// Estrutura para a tabela de páginas, mapeando páginas virtuais para frames físicos
+typedef struct {
+    int pagina;   // ID da página virtual
+    int frame;    // ID do frame físico (ou -1 se a página não estiver na memória física)
+} TabelaPaginas;
+
+// Inicializa os frames da memória física
+void inicializarMemoriaFisica(Frame memoriaFisica[]) {
+    for (int i = 0; i < NUM_FRAMES; i++) {
+        memoriaFisica[i].id = i;
+        memoriaFisica[i].ocupado = 0;
+    }
+}
+
+// Inicializa as páginas da memória virtual
+void inicializarMemoriaVirtual(Pagina memoriaVirtual[]) {
+    for (int i = 0; i < NUM_PAGES; i++) {
+        memoriaVirtual[i].id = i;
+        memoriaVirtual[i].alocado = 0;
+    }
+}
+
+// Inicializa a tabela de páginas
+void inicializarTabelaPaginas(TabelaPaginas tabela[]) {
+    for (int i = 0; i < NUM_PAGES; i++) {
+        tabela[i].pagina = i;
+        tabela[i].frame = -1;  // -1 indica que a página não está na memória física
+    }
+}
+// Encontra um frame livre na memória física
+int encontrarFrameLivre(Frame memoriaFisica[]) {
+    for (int i = 0; i < NUM_FRAMES; i++) {
+        if (memoriaFisica[i].ocupado == 0) {
+            return i;
+        }
+    }
+    return -1;  // Retorna -1 se não houver frames livres
+}
+
+// Aloca uma página virtual em um frame físico
+void alocarPagina(Pagina *pagina, Frame memoriaFisica[], TabelaPaginas tabela[]) {
+    int frameLivre = encontrarFrameLivre(memoriaFisica);
+    if (frameLivre != -1) {
+        memoriaFisica[frameLivre].ocupado = 1;
+        tabela[pagina->id].frame = frameLivre;
+        pagina->alocado = 1;
+        printf("Página %d alocada no frame %d.\n", pagina->id, frameLivre);
+    } else {
+        printf("Erro: Não há frames livres disponíveis para alocação.\n");
+    }
+}
+// Traduz um endereço virtual para um endereço físico
+int traduzirEndereco(int enderecoVirtual, TabelaPaginas tabela[]) {
+    int numeroPagina = enderecoVirtual / TAMANHO_PAGINA;
+    int offset = enderecoVirtual % TAMANHO_PAGINA;
+    int frame = tabela[numeroPagina].frame;
+
+    if (frame != -1) {
+        int enderecoFisico = frame * TAMANHO_PAGINA + offset;
+        printf("Endereço virtual %d traduzido para endereço físico %d.\n", enderecoVirtual, enderecoFisico);
+        return enderecoFisico;
+    } else {
+        printf("Erro: Page fault - a página %d não está na memória física.\n", numeroPagina);
+        return -1;  // Indica que ocorreu um page fault
+    }
+}
+int main() {
+    Frame memoriaFisica[NUM_FRAMES];
+    Pagina memoriaVirtual[NUM_PAGES];
+    TabelaPaginas tabela[NUM_PAGES];
+
+    // Inicializa as estruturas
+    inicializarMemoriaFisica(memoriaFisica);
+    inicializarMemoriaVirtual(memoriaVirtual);
+    inicializarTabelaPaginas(tabela);
+
+    // Aloca algumas páginas para teste
+    alocarPagina(&memoriaVirtual[0], memoriaFisica, tabela);
+    alocarPagina(&memoriaVirtual[1], memoriaFisica, tabela);
+    alocarPagina(&memoriaVirtual[2], memoriaFisica, tabela);
+
+    // Testa a tradução de endereços virtuais para físicos
+    traduzirEndereco(512, tabela);   // Exemplo de endereço virtual na página 2
+    traduzirEndereco(128, tabela);   // Exemplo de endereço virtual na página 0
+    traduzirEndereco(1024, tabela);  // Exemplo de endereço virtual fora da memória física
+
+    return 0;
+}
+
