@@ -1,0 +1,79 @@
+import pandas as pd
+import time
+
+# Função para simular paginação
+def simulate_execution(file_path):
+    try:
+        # Lendo o arquivo de execução com separador explícito (vírgula)
+        data = pd.read_csv(file_path, sep=",", header=None, names=["Processo", "Pag", "End"])
+        
+        # Exibindo as primeiras linhas para conferir as colunas
+        print("Arquivo de execução carregado com sucesso!")
+        print("Pré-visualização do arquivo:")
+        print(data.head())
+        
+        # Inicialização da memória física e virtual
+        memory_physical = {}
+        max_frames = 4  # Limite de frames na memória física (FIFO)
+        page_faults = 0
+
+        print("\nIniciando simulação...\n")
+        logs = []
+        
+        for index, row in data.iterrows():
+            process_id = row['Processo']
+            page = row['Pag']
+            logical_address = row['End']
+
+            # Verificar se a página já está na memória física
+            if (process_id, page) in memory_physical:
+                print(f"[TEMPO {index}] Página {page} do Processo {process_id} já está na memória.")
+                logs.append(f"[TEMPO {index}] Página {page} do Processo {process_id} já está na memória.")
+            else:
+                # Page fault
+                print(f"[TEMPO {index}] [PAGE FAULT] Página {page} do Processo {process_id} não está na memória.")
+                logs.append(f"[TEMPO {index}] [PAGE FAULT] Página {page} do Processo {process_id} não está na memória.")
+                page_faults += 1
+
+                # Adicionar página na memória física (FIFO)
+                if len(memory_physical) < max_frames:
+                    memory_physical[(process_id, page)] = logical_address
+                else:
+                    # Substituição de página: FIFO
+                    removed_page = list(memory_physical.keys())[0]
+                    print(f"[TEMPO {index}] Substituindo Página {removed_page[1]} do Processo {removed_page[0]}.")
+                    logs.append(f"[TEMPO {index}] Substituindo Página {removed_page[1]} do Processo {removed_page[0]}.")
+                    del memory_physical[removed_page]
+                    memory_physical[(process_id, page)] = logical_address
+            
+            # Exibir estado atual da memória física
+            print(f"Estado atual da memória física: {memory_physical}")
+            logs.append(f"Estado atual da memória física: {memory_physical}")
+            
+            # Simulando tempo de delay
+            time.sleep(0.5)
+        
+        print("\nSimulação concluída!")
+        logs.append("\nSimulação concluída!")
+        logs.append(f"Total de Page Faults: {page_faults}")
+        print(f"Total de Page Faults: {page_faults}")
+
+        # Salvar logs
+        with open("simulacao_logs.txt", "w") as log_file:
+            for log in logs:
+                log_file.write(log + "\n")
+        print("\nLogs salvos no arquivo 'simulacao_logs.txt'.")
+
+    except FileNotFoundError:
+        print("Erro: O arquivo especificado não foi encontrado.")
+    except ValueError as ve:
+        print(f"Erro de validação do arquivo: {ve}")
+    except Exception as e:
+        print(f"Erro ao executar a simulação: {e}")
+
+
+# Caminho para o arquivo CSV
+file_path = "arquivo_execucao.csv"
+
+# Executando a simulação
+simulate_execution(file_path)
